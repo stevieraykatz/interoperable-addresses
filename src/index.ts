@@ -30,6 +30,7 @@ export {
 export {
   concatBytes,
   numberToBytes,
+  numberToMinBytes,
   hexToBytes,
   bytesToHex,
   keccak256,

@@ -35,6 +35,27 @@ export function numberToBytes(num: number, length: number): Uint8Array {
 }
 
 /**
+ * Converts a number to a big-endian byte array using the minimum bytes needed
+ * @param num - The number to convert
+ * @returns Uint8Array with minimum bytes needed to represent the number
+ */
+export function numberToMinBytes(num: number): Uint8Array {
+  if (num === 0) {
+    return new Uint8Array([0]);
+  }
+  
+  // Calculate minimum bytes needed
+  let bytesNeeded = 0;
+  let temp = num;
+  while (temp > 0) {
+    bytesNeeded++;
+    temp = Math.floor(temp / 256);
+  }
+  
+  return numberToBytes(num, bytesNeeded);
+}
+
+/**
  * Converts a hex string to Uint8Array
  * Handles both 0x-prefixed and non-prefixed hex strings
  */

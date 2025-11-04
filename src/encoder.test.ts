@@ -19,7 +19,7 @@ import { hexToBytes, bytesToHex } from './utils';
 describe('ERC-7930 Interoperable Addresses', () => {
   describe('Example 1: Ethereum mainnet address', () => {
     const address = '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045';
-    const chainReference = new Uint8Array([1]); // Chain ID 1
+    const chainId = 1; // Ethereum mainnet
     const expectedBinary = '0x00010000010114D8DA6BF26964AF9D7EED9E03E53415D37AA96045';
     const expectedChecksum = '4CA88C9C';
     const expectedName = '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045@eip155:1#4CA88C9C';
@@ -27,21 +27,21 @@ describe('ERC-7930 Interoperable Addresses', () => {
     it('should create interoperable address', () => {
       const interopAddress = createInteroperableAddress({
         chainType: ChainType.EIP155,
-        chainReference,
-        address: hexToBytes(address),
+        chainReference: chainId,
+        address,
       });
 
       expect(interopAddress.version).toBe(0x0001);
       expect(interopAddress.chainType).toBe(ChainType.EIP155);
-      expect(interopAddress.chainReference).toEqual(chainReference);
+      expect(interopAddress.chainReference).toEqual(new Uint8Array([1]));
       expect(interopAddress.address).toEqual(hexToBytes(address));
     });
 
     it('should encode to correct binary format', () => {
       const interopAddress = createInteroperableAddress({
         chainType: ChainType.EIP155,
-        chainReference,
-        address: hexToBytes(address),
+        chainReference: chainId,
+        address,
       });
 
       const encoded = encodeInteroperableAddress(interopAddress);
@@ -51,8 +51,8 @@ describe('ERC-7930 Interoperable Addresses', () => {
     it('should calculate correct checksum', () => {
       const interopAddress = createInteroperableAddress({
         chainType: ChainType.EIP155,
-        chainReference,
-        address: hexToBytes(address),
+        chainReference: chainId,
+        address,
       });
 
       const checksum = calculateChecksum(interopAddress);
@@ -62,8 +62,8 @@ describe('ERC-7930 Interoperable Addresses', () => {
     it('should create correct interoperable name', () => {
       const interopAddress = createInteroperableAddress({
         chainType: ChainType.EIP155,
-        chainReference,
-        address: hexToBytes(address),
+        chainReference: chainId,
+        address,
       });
 
       const name = toInteroperableName(
@@ -78,8 +78,8 @@ describe('ERC-7930 Interoperable Addresses', () => {
     it('should create and encode in one step', () => {
       const encoded = createAndEncode({
         chainType: ChainType.EIP155,
-        chainReference,
-        address: hexToBytes(address),
+        chainReference: chainId,
+        address,
       });
 
       expect(bytesToHex(encoded)).toBe(expectedBinary);
@@ -161,7 +161,7 @@ describe('ERC-7930 Interoperable Addresses', () => {
     it('should create interoperable address without chain reference', () => {
       const interopAddress = createInteroperableAddress({
         chainType: ChainType.EIP155,
-        address: hexToBytes(address),
+        address,
       });
 
       expect(interopAddress.version).toBe(0x0001);
@@ -173,7 +173,7 @@ describe('ERC-7930 Interoperable Addresses', () => {
     it('should encode to correct binary format', () => {
       const interopAddress = createInteroperableAddress({
         chainType: ChainType.EIP155,
-        address: hexToBytes(address),
+        address,
       });
 
       const encoded = encodeInteroperableAddress(interopAddress);
@@ -183,7 +183,7 @@ describe('ERC-7930 Interoperable Addresses', () => {
     it('should calculate correct checksum', () => {
       const interopAddress = createInteroperableAddress({
         chainType: ChainType.EIP155,
-        address: hexToBytes(address),
+        address,
       });
 
       const checksum = calculateChecksum(interopAddress);
@@ -193,7 +193,7 @@ describe('ERC-7930 Interoperable Addresses', () => {
     it('should create correct interoperable name', () => {
       const interopAddress = createInteroperableAddress({
         chainType: ChainType.EIP155,
-        address: hexToBytes(address),
+        address,
       });
 
       const name = toInteroperableName(
@@ -294,16 +294,63 @@ describe('ERC-7930 Interoperable Addresses', () => {
       expect(() => {
         createInteroperableAddress({
           chainType: -1,
-          address: hexToBytes('0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045'),
+          address: '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045',
         });
       }).toThrow('Chain type must be a 2-byte value (0-65535)');
 
       expect(() => {
         createInteroperableAddress({
           chainType: 0x10000,
-          address: hexToBytes('0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045'),
+          address: '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045',
         });
       }).toThrow('Chain type must be a 2-byte value (0-65535)');
+    });
+  });
+
+  describe('Number to bytes conversion', () => {
+    it('should convert small chain IDs correctly', () => {
+      const interopAddress = createInteroperableAddress({
+        chainType: ChainType.EIP155,
+        chainReference: 1,
+        address: '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045',
+      });
+      expect(interopAddress.chainReference).toEqual(new Uint8Array([1]));
+    });
+
+    it('should convert larger chain IDs correctly', () => {
+      const interopAddress = createInteroperableAddress({
+        chainType: ChainType.EIP155,
+        chainReference: 137, // Polygon
+        address: '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045',
+      });
+      expect(interopAddress.chainReference).toEqual(new Uint8Array([137]));
+    });
+
+    it('should convert multi-byte chain IDs correctly', () => {
+      const interopAddress = createInteroperableAddress({
+        chainType: ChainType.EIP155,
+        chainReference: 42161, // Arbitrum (0xA4B1)
+        address: '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045',
+      });
+      expect(interopAddress.chainReference).toEqual(new Uint8Array([0xA4, 0xB1]));
+    });
+
+    it('should accept hex string addresses', () => {
+      const interopAddress = createInteroperableAddress({
+        chainType: ChainType.EIP155,
+        chainReference: 1,
+        address: '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045',
+      });
+      expect(interopAddress.address.length).toBe(20);
+    });
+
+    it('should accept addresses without 0x prefix', () => {
+      const interopAddress = createInteroperableAddress({
+        chainType: ChainType.EIP155,
+        chainReference: 1,
+        address: 'd8dA6BF26964aF9D7eEd9e03E53415D37aA96045',
+      });
+      expect(interopAddress.address.length).toBe(20);
     });
   });
 

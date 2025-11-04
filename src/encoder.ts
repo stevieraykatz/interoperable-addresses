@@ -10,7 +10,9 @@ import { VERSION_1 } from './constants';
 import {
   concatBytes,
   numberToBytes,
+  numberToMinBytes,
   bytesToHex,
+  hexToBytes,
   keccak256,
 } from './utils';
 
@@ -29,7 +31,27 @@ import {
 export function createInteroperableAddress(
   params: CreateInteroperableAddressParams
 ): InteroperableAddress {
-  const { chainType, chainReference = new Uint8Array(0), address = new Uint8Array(0) } = params;
+  const { chainType } = params;
+  
+  // Convert chainReference to Uint8Array if it's a number
+  let chainReference: Uint8Array;
+  if (params.chainReference === undefined) {
+    chainReference = new Uint8Array(0);
+  } else if (typeof params.chainReference === 'number') {
+    chainReference = numberToMinBytes(params.chainReference);
+  } else {
+    chainReference = params.chainReference;
+  }
+  
+  // Convert address to Uint8Array if it's a string
+  let address: Uint8Array;
+  if (params.address === undefined) {
+    address = new Uint8Array(0);
+  } else if (typeof params.address === 'string') {
+    address = hexToBytes(params.address);
+  } else {
+    address = params.address;
+  }
 
   // Validate: at least one of chainReference or address must be non-zero
   if (chainReference.length === 0 && address.length === 0) {
