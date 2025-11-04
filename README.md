@@ -1,14 +1,6 @@
 # Interoperable Addresses (ERC-7930)
 
-A minimal TypeScript implementation for creating and managing Interoperable Addresses according to the [ERC-7930 specification](./spec.md).
-
-## Features
-
-- ✅ Single lightweight dependency (`@noble/hashes` - audited cryptography library)
-- ✅ Full TypeScript support with type definitions
-- ✅ ERC-7930 v1 binary encoding
-- ✅ Human-readable name format support with checksums
-- ✅ Extensible chain type system (CAIP-350)
+A minimal TypeScript implementation for creating and managing Interoperable Addresses according to the [EIP-7930](https://eips.ethereum.org/EIPS/eip-7930).
 
 ## Installation
 
@@ -27,15 +19,14 @@ import {
   createInteroperableAddress,
   encodeInteroperableAddress,
   ChainType,
-  hexToBytes,
   bytesToHex,
 } from 'interoperable-addresses';
 
 // Create an interoperable address for Ethereum mainnet
 const interopAddress = createInteroperableAddress({
   chainType: ChainType.EIP155,
-  chainReference: new Uint8Array([1]), // Chain ID 1 (Ethereum mainnet)
-  address: hexToBytes('0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045'),
+  chainReference: 1, // Chain ID as number
+  address: '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045',
 });
 
 // Encode to binary format
@@ -52,13 +43,12 @@ import {
   toInteroperableName,
   formatInteroperableName,
   ChainType,
-  hexToBytes,
 } from 'interoperable-addresses';
 
 const interopAddress = createInteroperableAddress({
   chainType: ChainType.EIP155,
-  chainReference: new Uint8Array([1]),
-  address: hexToBytes('0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045'),
+  chainReference: 1,
+  address: '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045',
 });
 
 const name = toInteroperableName(
@@ -74,12 +64,12 @@ console.log(formatInteroperableName(name));
 ### Quick Encoding
 
 ```typescript
-import { createAndEncode, ChainType, hexToBytes, bytesToHex } from 'interoperable-addresses';
+import { createAndEncode, ChainType, bytesToHex } from 'interoperable-addresses';
 
 const encoded = createAndEncode({
   chainType: ChainType.EIP155,
-  chainReference: new Uint8Array([1]),
-  address: hexToBytes('0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045'),
+  chainReference: 1,
+  address: '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045',
 });
 
 console.log(bytesToHex(encoded));
@@ -90,7 +80,21 @@ console.log(bytesToHex(encoded));
 ```typescript
 import { createInteroperableAddress, ChainType, hexToBytes } from 'interoperable-addresses';
 
-// Solana example (requires 32-byte address and chain reference)
+// Base (chain ID 8453)
+const baseAddress = createInteroperableAddress({
+  chainType: ChainType.EIP155,
+  chainReference: 8453,
+  address: '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045',
+});
+
+// Arbitrum (chain ID 42161)
+const arbitrumAddress = createInteroperableAddress({
+  chainType: ChainType.EIP155,
+  chainReference: 42161,
+  address: '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045',
+});
+
+// Solana example (requires 32-byte address and chain reference as Uint8Array)
 const solanaAddress = createInteroperableAddress({
   chainType: ChainType.SOLANA,
   chainReference: hexToBytes('0x45296998a6f8e2a784db5d9f95e18fc23f70441a1039446801089879b08c7ef0'),
@@ -100,7 +104,7 @@ const solanaAddress = createInteroperableAddress({
 // EVM address without chain ID
 const evmAddress = createInteroperableAddress({
   chainType: ChainType.EIP155,
-  address: hexToBytes('0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045'),
+  address: '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045',
   // chainReference omitted
 });
 ```
