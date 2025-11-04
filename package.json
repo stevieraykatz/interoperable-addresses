@@ -1,0 +1,38 @@
+{
+  "name": "interoperable-addresses",
+  "version": "0.1.0",
+  "description": "Minimal TypeScript implementation of ERC-7930 Interoperable Addresses",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "erc-7930",
+    "interoperable-addresses",
+    "ethereum",
+    "cross-chain",
+    "caip-10",
+    "caip-350"
+  ],
+  "author": "@stevieraykatz",
+  "license": "CC0-1.0",
+  "dependencies": {
+    "@noble/hashes": "^1.3.3"
+  },
+  "devDependencies": {
+    "@scure/base": "^1.1.5",
+    "typescript": "^5.3.0",
+    "vitest": "^1.0.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}
+
