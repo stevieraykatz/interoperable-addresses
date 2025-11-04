@@ -4,10 +4,17 @@ A minimal TypeScript implementation for creating and managing Interoperable Addr
 
 ## Installation
 
+> **Note:** This package is not yet published to npm. Install directly from GitHub:
+
+```bash
+npm install git+https://github.com/stevieraykatz/interoperable-addresses.git
+# or
+yarn add git+https://github.com/stevieraykatz/interoperable-addresses.git
+```
+
+Once published to npm, you'll be able to install via:
 ```bash
 npm install interoperable-addresses
-# or
-yarn add interoperable-addresses
 ```
 
 ## Usage
