@@ -12,11 +12,6 @@ npm install git+https://github.com/stevieraykatz/interoperable-addresses.git
 yarn add git+https://github.com/stevieraykatz/interoperable-addresses.git
 ```
 
-Once published to npm, you'll be able to install via:
-```bash
-npm install interoperable-addresses
-```
-
 ## Usage
 
 ### Basic Example: Encoding an Ethereum Address
